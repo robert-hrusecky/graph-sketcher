@@ -1,3 +1,4 @@
+package com.sketcher.graph;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,12 +60,12 @@ public class CPPGraph<D> {
 		}
 	}
 
-	private List<Path<D>> getTJoin() {
+	private List<List<Vertex<D>>> getTJoin() {
 		List<Vertex<D>> odds = vertices.stream()
 				.filter(v -> v.adjacent.size() % 2 == 1)
 				.collect(Collectors.toList());
 
-		MatchGraph<Path<D>> matchGraph = new MatchGraph<>(odds.size());
+		MatchGraph<List<Vertex<D>>> matchGraph = new MatchGraph<>(odds.size());
 		
 		for (int i = 0; i < odds.size(); i++) {
 			Vertex<D> v1 = odds.get(i);
@@ -78,7 +79,7 @@ public class CPPGraph<D> {
 					v2 = v2.prev;
 				} while (v2 != v1);
 				path.add(v1);
-				matchGraph.addEdge(i, j, dist, new Path<D>(path, dist));
+				matchGraph.addEdge(i, j, dist, path);
 			}
 		}
 		
@@ -87,10 +88,10 @@ public class CPPGraph<D> {
 	}
 	
 	public List<D> getPath() {
-		List<Path<D>> tJoin = getTJoin();
-		for (Path<D> path : tJoin) {
-			for (int i = 1; i < path.path.size(); i++) {
-				Edge<D> e = path.path.get(i).findEdge(path.path.get(i - 1));
+		List<List<Vertex<D>>> tJoin = getTJoin();
+		for (List<Vertex<D>> path : tJoin) {
+			for (int i = 1; i < path.size(); i++) {
+				Edge<D> e = path.get(i).findEdge(path.get(i - 1));
 				if (e.mult != 2) {
 					e.mult = 2;
 				}
@@ -238,16 +239,6 @@ public class CPPGraph<D> {
 		public DijkstraVertex(Vertex<D> v, double dist) {
 			this.v = v;
 			this.dist = dist;
-		}
-	}
-
-	private static class Path<D> {
-		private List<Vertex<D>> path;
-		private double length;
-
-		public Path(List<Vertex<D>> path, double length) {
-			this.path = path;
-			this.length = length;
 		}
 	}
 }
