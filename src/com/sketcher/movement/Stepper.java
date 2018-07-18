@@ -6,6 +6,8 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
 public class Stepper {
+	
+	public static final long DELAY = 3;
 
 	public static final int STEPS_PER_REV = 512;
 	public static final int NUM_PINS = 4;
@@ -40,7 +42,7 @@ public class Stepper {
 		return position + accumulator;
 	}
 	
-	public void finalize() {
+	public void round() {
 		step((int) Math.round(accumulator));
 		accumulator = 0.0;
 	}
