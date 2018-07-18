@@ -7,6 +7,7 @@ import com.pi4j.io.gpio.PinState;
 
 public class Stepper {
 
+	public static final int STEPS_PER_REV = 512;
 	public static final int NUM_PINS = 4;
 	private static final boolean[][] PIN_MATRIX = {
 			{ true, true, false, false },
