@@ -2,8 +2,6 @@ package com.sketcher.movement;
 
 public class StepperGroup {
 	
-	public static final long DELAY = 3;
-	
 	private Stepper stepper1, stepper2;
 
 	public StepperGroup(Stepper stepper1, Stepper stepper2) {
@@ -19,11 +17,7 @@ public class StepperGroup {
 		for (int i = 0; i < numSteps; i++) {
 			stepper1.step(increment1);
 			stepper2.step(increment2);
-			try {
-				Thread.sleep(DELAY);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Stepper.delay();
 		}
 	}
 }

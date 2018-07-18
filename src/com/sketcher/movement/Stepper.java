@@ -65,7 +65,12 @@ public class Stepper {
 	
 	private void stepForward(int steps) {
 		int newPosition = position + steps;
+		if (steps != 0) {
+			position++;
+			setPins();
+		}
 		while (position < newPosition) {
+			delay();
 			position++;
 			setPins();
 		}
@@ -73,7 +78,12 @@ public class Stepper {
 	
 	private void stepBackward(int steps) {
 		int newPosition = position - steps;
+		if (steps != 0) {
+			position--;
+			setPins();
+		}
 		while (position > newPosition) {
+			delay();
 			position--;
 			setPins();
 		}
@@ -83,6 +93,14 @@ public class Stepper {
 		int row = Math.floorMod(position, pins.length);
 		for (int i = 0; i < pins.length; i++) {
 			pins[i].setState(PIN_MATRIX[row][i]);
+		}
+	}
+	
+	public static void delay() {
+		try {
+			Thread.sleep(DELAY);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
