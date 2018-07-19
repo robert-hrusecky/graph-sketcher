@@ -20,4 +20,9 @@ public class StepperGroup {
 			Stepper.delay();
 		}
 	}
+	
+	public void zero() {
+		stepper1.zero();
+		stepper2.zero();
+	}
 }

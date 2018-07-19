@@ -7,16 +7,20 @@ import com.pi4j.io.gpio.PinState;
 
 public class Stepper {
 	
-	public static final long DELAY = 3;
-
-	public static final int STEPS_PER_REV = 512;
+	public static final long DELAY = 1;
 	public static final int NUM_PINS = 4;
 	private static final boolean[][] PIN_MATRIX = {
+			{ true, false, false, false },
 			{ true, true, false, false },
+			{ false, true, false, false },
 			{ false, true, true, false },
+			{ false, false, true, false },
 			{ false, false, true, true },
-			{ true, false, false, true },
+			{ false, false, false, true },
+			{ true, false, false, true }
 	};
+	private static final double GEAR_RATIO = 25792.0 / 405.0;
+	public static final double STEPS_PER_REVOLUTION = PIN_MATRIX.length * 8 * GEAR_RATIO;
 
 	private GpioPinDigitalOutput[] pins;
 	private int position;
@@ -40,11 +44,6 @@ public class Stepper {
 	
 	public double getPosition() {
 		return position + accumulator;
-	}
-	
-	public void round() {
-		step((int) Math.round(accumulator));
-		accumulator = 0.0;
 	}
 
 	public void step(double steps) {
@@ -90,7 +89,7 @@ public class Stepper {
 	}
 	
 	private void setPins() {
-		int row = Math.floorMod(position, pins.length);
+		int row = Math.floorMod(position, PIN_MATRIX.length);
 		for (int i = 0; i < pins.length; i++) {
 			pins[i].setState(PIN_MATRIX[row][i]);
 		}
@@ -102,6 +101,11 @@ public class Stepper {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void zero() {
+		position = 0;
+		accumulator = 0.0;
 	}
 
 }
