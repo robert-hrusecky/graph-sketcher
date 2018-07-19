@@ -1,4 +1,5 @@
 package com.sketcher.graph;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -7,11 +8,25 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Class for finding perfect matchings of near minimum weight in graphs.
+ * 
+ * @author robert
+ *
+ * @param <E>
+ *            data to associate with each edge
+ */
 public class MatchGraph<E> {
 
 	private List<Vertex<E>> vertices;
 	private List<Edge<E>> edges;
-	
+
+	/**
+	 * Creates an empty graph with no edges and <code>size</code> verticies
+	 * 
+	 * @param size
+	 *            The number of vertices in this graph
+	 */
 	public MatchGraph(int size) {
 		vertices = new ArrayList<>();
 		this.edges = new ArrayList<>();
@@ -22,6 +37,18 @@ public class MatchGraph<E> {
 		}
 	}
 
+	/**
+	 * Adds an edge to this graph
+	 * 
+	 * @param v1
+	 *            Id of first vertex
+	 * @param v2
+	 *            Id of second vertex
+	 * @param weight
+	 *            weight of the edge
+	 * @param data
+	 *            data to associate with this edge
+	 */
 	public final void addEdge(int v1, int v2, double weight, E data) {
 		Edge<E> e = new Edge<E>();
 		e.v1 = vertices.get(v1);
@@ -35,10 +62,13 @@ public class MatchGraph<E> {
 		e.v2.adjacent.add(e);
 	}
 
+	/**
+	 * Resets the graph after performing an algorithm
+	 */
 	public void clear() {
-		 for (Vertex<E> v : vertices) {
-			 v.weightedDegree = 0.0;
-		 }
+		for (Vertex<E> v : vertices) {
+			v.weightedDegree = 0.0;
+		}
 		for (Edge<E> e : edges) {
 			e.matched = false;
 			e.tmpMatched = false;
@@ -47,14 +77,26 @@ public class MatchGraph<E> {
 		}
 	}
 
+	/**
+	 * Brute force search for perfect matching with minimum weight. May be VERY
+	 * slow.
+	 * 
+	 * @return A list of the edge data included in the matching.
+	 */
 	public List<E> match() {
 		match(Double.POSITIVE_INFINITY, 0.0);
-		return edges.stream()
-				.filter(e -> e.matched)
-				.map(e -> e.data)
-				.collect(Collectors.toList());
+		return edges.stream().filter(e -> e.matched).map(e -> e.data).collect(Collectors.toList());
 	}
 
+	/**
+	 * Helper function for {@link #match()}
+	 * 
+	 * @param best
+	 *            Double.POSITIVE_INFINITY
+	 * @param weight
+	 *            0.0
+	 * @return the weight of the matching
+	 */
 	private double match(double best, double weight) {
 		int count = 0;
 		for (Edge<E> e : edges) {
@@ -83,6 +125,12 @@ public class MatchGraph<E> {
 		return best;
 	}
 
+	/**
+	 * Fast greedy algorithm for finding a perfect matching with near-minimum
+	 * weight.
+	 * 
+	 * @return A list of the edge data included in the matching.
+	 */
 	public List<E> matchGreedy() {
 		List<E> matched = new LinkedList<E>();
 		Set<Edge<E>> edgeSet = new HashSet<>(edges);
@@ -98,7 +146,7 @@ public class MatchGraph<E> {
 			}
 			matched.add(match.data);
 			match.matched = true;
-			
+
 			for (Edge<E> e : match.v1.adjacent) {
 				edgeSet.remove(e);
 				e.getOther(match.v1).weightedDegree -= e.weight;
@@ -107,9 +155,9 @@ public class MatchGraph<E> {
 				edgeSet.remove(e);
 				e.getOther(match.v2).weightedDegree -= e.weight;
 			}
-			
+
 		}
-		
+
 		return matched;
 	}
 
@@ -118,11 +166,24 @@ public class MatchGraph<E> {
 		return edges.toString();
 	}
 
+	/**
+	 * Represents a vertex
+	 * 
+	 * @author robert
+	 *
+	 * @param <E>
+	 *            the edge data
+	 */
 	private static class Vertex<E> {
 		private int id;
 		private double weightedDegree;
 		private List<Edge<E>> adjacent = new ArrayList<>();
 
+		/**
+		 * For use in {@link MatchGraph#match()}
+		 * 
+		 * @return
+		 */
 		public boolean isTmpMatched() {
 			for (Edge<E> e : adjacent) {
 				if (e.tmpMatched) {
@@ -148,6 +209,14 @@ public class MatchGraph<E> {
 
 	}
 
+	/**
+	 * Represents an edge in the graph
+	 * 
+	 * @author robert
+	 *
+	 * @param <E>
+	 *            the edge data
+	 */
 	private static class Edge<E> {
 		private E data;
 		private Vertex<E> v1, v2;
@@ -155,6 +224,14 @@ public class MatchGraph<E> {
 		private boolean matched = false;
 		private boolean tmpMatched = false;
 
+		/**
+		 * Given the current vertex, return the other vertex that this edge is attached
+		 * to.
+		 * 
+		 * @param v
+		 *            the current vertex
+		 * @return the other vertex that this edge is attached to
+		 */
 		public Vertex<E> getOther(Vertex<E> v) {
 			return v == v1 ? v2 : v1;
 		}
