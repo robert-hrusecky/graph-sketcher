@@ -11,7 +11,7 @@ import com.pi4j.io.gpio.Pin;
  */
 public class Plotter extends StepperGroup {
 
-	private static final double WHEEL_RADIUS = 0.75;
+	private static final double WHEEL_RADIUS = 2.5;
 	private static final double STEPS_PER_CM = Stepper.STEPS_PER_REVOLUTION / (2 * Math.PI * WHEEL_RADIUS);
 
 	private double x, y;
